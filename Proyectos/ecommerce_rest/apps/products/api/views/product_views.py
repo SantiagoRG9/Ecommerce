@@ -10,8 +10,9 @@ class ProductListAPIView(GeneralListApiView):
     serializer_class = ProductSerializer
 
 
-class ProductCreateAPIView(generics.CreateAPIView):
+class ProductCreateListAPIView(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
+    queryset = ProductSerializer.Meta.model.objects.filter(state = True)
 
     def post(self, request):
         serializer = self.serializer_class(data = request.data)
