@@ -1,20 +1,38 @@
 from rest_framework import serializers
 from apps.users.models import User
 
-# TOKEN LOGIN--------------------
+# TOKEN LOGIN JWT ---------------
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-class UserTokenSerializer(serializers.ModelSerializer):
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    pass
+
+# TOKEN LOGIN JWT ---------------
+
+
+
+# TOKEN LOGIN 2 FORMA --------------------
+
+    # class UserTokenSerializer(serializers.ModelSerializer):
+    #     class Meta:
+    #         model = User
+    #         fields = ('username','email', 'name', 'last_name')
+
+# TOKEN LOGIN 2 FORMA--------------------
+
+
+#SERIALIZADORES DE USUARIOS 
+
+class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username','email', 'name', 'last_name')
-
-# TOKEN LOGIN--------------------
+        fields = ('username','email','name','last_name')
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = '__all__' #<------  ESTO ES PARA TODOS LOS CAMPOS
 
     def create(self, validated_data):
         user = User(**validated_data)
@@ -22,11 +40,18 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    def update(self,instance, validated_data):
-        update_user = super().update(instance,validated_data)
-        update_user.set_password(validated_data['password'])
-        update_user.save()
-        return update_user
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username','email', 'name', 'last_name')  #<---- ALGUNAS COLUMNAS
+
+    # def update(self,instance, validated_data):
+    #     update_user = super().update(instance,validated_data)
+    #     update_user.set_password(validated_data['password'])
+    #     update_user.save()
+    #     return update_user
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,14 +62,8 @@ class UserListSerializer(serializers.ModelSerializer):
             'id' : instance['id'],
             'username' : instance['username'],
             'email':instance['email'],
-            'password' : instance['password']
+            'name' : instance['name'],
         }
-
-
-
-
-
-
 
 
 
