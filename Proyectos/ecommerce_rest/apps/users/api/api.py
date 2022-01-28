@@ -1,11 +1,13 @@
+from crypt import methods
 from turtle import mode
 from django.shortcuts import get_object_or_404
 
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from apps.users.models import User
-from apps.users.api.serializers import UserSerializer, UserListSerializer, UpdateUserSerializer
+from apps.users.api.serializers import UserSerializer, UserListSerializer, UpdateUserSerializer, PasswordSerializer
 from rest_framework.decorators import api_view
 
 class UserViewSet(viewsets.GenericViewSet):
@@ -16,6 +18,20 @@ class UserViewSet(viewsets.GenericViewSet):
     def get_object(self, pk):
         return get_object_or_404(self.serializer_class.Meta.model, pk=pk)
 
+    @action(detail=True, methods=['post'])
+    def set_password(self, request, pk=None):
+        user = self.get_object(pk)
+        password_serializer = PasswordSerializer(data = request.data)
+        if password_serializer.is_valid():
+            user.set_password(password_serializer.validated_data['password'])
+            user.save()
+            return Response({
+                'message' : 'Contraseña actualizada correctamente!'
+            })
+        return Response({
+            'message' : 'Hay errores en la informacion enviada',
+            'errors' : password_serializer.errors
+        }, status = status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
         users = User.objects.all().values('id','username','email','name')

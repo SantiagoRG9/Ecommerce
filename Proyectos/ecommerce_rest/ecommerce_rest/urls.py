@@ -13,8 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.views.static import serve
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include, re_path
+
 
 from rest_framework import permissions
 
@@ -57,4 +60,10 @@ urlpatterns = [
     path('products/', include('apps.products.api.routers')),
     path('logout/', Logout.as_view(), name='logout'),
     path('login/', Login.as_view(), name='login'),
+]
+
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
 ]
